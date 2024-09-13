@@ -40,6 +40,14 @@ paridad=0
 contraseña_verificada = False
 
 
+cuadroTexto2 = None  # Asignar más tarde en la inicialización de la GUI
+lista_desplegable = StringVar()
+lista_desplegable1 = StringVar()
+lista_desplegable2 = StringVar()
+lista_desplegable3 = StringVar()
+lista_desplegable4 = StringVar()
+lista_desplegable5 = StringVar()  # Asumido que es un StringVar para directorio
+
 # Función para verificar la contraseña
 def verificar_contraseña():
     global contraseña_verificada
@@ -155,9 +163,11 @@ def carpeta(tab2):
     global directorio, actual
     directorio=filedialog.askdirectory()
     nombre_directorio = os.path.basename(directorio)
-    lista_desplegable5.set(directorio)
+    cuadroTexto2=Label(tab2, text="                                                                   ",font=('Classic Robot',12))
+    cuadroTexto2.place(x=160, y=330)
+    time.sleep(1)
     cuadroTexto2=Label(tab2, text=nombre_directorio,font=('Classic Robot',12))
-    cuadroTexto2.place(x=130, y=330)
+    cuadroTexto2.place(x=170, y=330)
     if directorio!="":
         os.chdir(directorio)
 
@@ -188,13 +198,13 @@ def codigoSave():
         'tam_datos': lista_desplegable2.get(),
         'paridad': lista_desplegable3.get(),
         'bits_parada': lista_desplegable4.get(),
-        'directorio': directorio  # Añade la ruta del directorio aquí
+        'directorio': actual  # Añade la ruta del directorio aquí
     }
     
     with open('configuracion.json', 'w') as f:
         json.dump(config, f, indent=4)
 
-    cuadroTexto2.config(text=os.path.basename(directorio))
+    cuadroTexto2.config(text=os.path.basename(actual))
 
 
 def cargar_configuracion():
@@ -210,9 +220,11 @@ def cargar_configuracion():
         lista_desplegable4.set(config.get('bits_parada', '1'))
 
         directorio = config.get('directorio', actual)  # Usa la ruta guardada o una cadena vacía si no hay
-        lista_desplegable5.set(directorio) 
-        cuadroTexto2.config(text=os.path.basename(directorio)) 
-
+        if directorio:
+            lista_desplegable5.set(directorio)  # Mostrar la ruta en el desplegable si es necesario
+            cuadroTexto2.config(text=os.path.basename(directorio))  # Mostrar la ruta del directorio
+        else:
+            cuadroTexto2.config(text="No hay directorio seleccionado")  # Texto por defecto si no hay ruta guardada
     except FileNotFoundError:
         # Si no hay archivo de configuración, usamos valores por defecto
         cuadroTexto2.config(text="No hay directorio seleccionado")  # Texto por defecto si no se encuentra el archivo
